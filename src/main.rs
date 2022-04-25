@@ -13,8 +13,7 @@ fn main() {
 
     let mut guesses: Vec<String> = Vec::new();  // Vector containing the user's guesses
 
-    // let answer = get_answer(&answers);
-    let answer = "abele".to_string();
+    let answer = get_answer(&answers);
 
     // Enter game
     let mut num_guesses: i8 = 0;
