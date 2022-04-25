@@ -14,7 +14,7 @@ If a letter is green, that letter appears at that position in the secret word. I
 You get six (6) tries to correctly guess the word, and if you do, you win!
 
 ## Installation
-- Ensure you have installed Rust on your device. [Follow these instructions to do so](https://www.rust-lang.org/tools/install)
+- Ensure you have [installed Rust on your device](https://www.rust-lang.org/tools/install).
 - Clone this repository with the following command:
 ```bash
 git clone https://github.com/dylanjtuttle/rustle
