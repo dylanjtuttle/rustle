@@ -74,7 +74,7 @@ fn print_guess(guess: &String, answer: &String, blocks: bool) {
         let guess_i = vec![guess_bytes[i]];
         let guess_i = String::from_utf8(guess_i).unwrap();
 
-        if guess_bytes[i] == answer_bytes[i] {
+        if is_green(&i, &guess_bytes, &answer_bytes) {
             // Print the letter green
             if blocks {
                 print!("🟩");
@@ -82,7 +82,7 @@ fn print_guess(guess: &String, answer: &String, blocks: bool) {
                 print!("{}", guess_i.bright_green());
             }
             io::stdout().flush().unwrap();
-        } else if answer_bytes.contains(&guess_bytes[i]) {
+        } else if is_yellow(&i, &guess_bytes, &answer_bytes) {
             // Print the letter yellow
             if blocks {
                 print!("🟨");
@@ -101,6 +101,54 @@ fn print_guess(guess: &String, answer: &String, blocks: bool) {
         }
     }
     println!("");
+}
+
+fn is_green(index: &usize, guess: &[u8], answer: &[u8]) -> bool {
+    guess[*index] == answer[*index]
+}
+
+fn is_yellow(index: &usize, guess: &[u8], answer: &[u8]) -> bool {
+    if answer.contains(&guess[*index]) {
+        // The letter is found somewhere in the answer word, but not at this index
+        // We need to prevent incorrect yellow letters
+        // For example, if the answer is point and the guess is foods, the first o should be green and the second o should be grey
+        // For example, if the answer is spite and the guess is seedy, the first e should be yellow and the second e should be grey
+        
+        // Begin by checking if there are any duplicate letters in the guess before the current index
+        let mut dup_indices: Vec<usize> = Vec::new();  // Vector containing the indices of any duplicate letters
+        for i in 0 .. *index + 1 {
+            if guess[i] == guess[*index] {
+                dup_indices.push(i)
+            }
+        }
+        // dup_indices now contains the indices of all letters which are duplicates of our letter
+        let mut num_matches_answer = 0;
+        for i in 0 .. 5 {
+            // count the number of letters in the answer which match our letter
+            if answer[i] == guess[*index] {
+                num_matches_answer += 1;
+            }
+        }
+        
+        if num_matches_answer >= dup_indices.len() {
+            // For example, if there are two 'o's in the answer, and two 'o's in the guess,
+            // then we don't have to worry about incorrect yellows, unless we have a green letter ahead of us
+
+            // Check if there is a green letter ahead of us
+            for i in *index .. 5 {
+                if answer[i] == guess[*index] && is_green(&i, guess, answer) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            // There are more of our letter in the guess than in the answer
+            return false;
+        }
+    } else {
+        false
+    }
 }
 
 /// Returns a boolean representing whether a word is in either the list of allowed words or the list of answer words
